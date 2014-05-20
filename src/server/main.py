@@ -3,6 +3,8 @@ import sys
 import json
 import datetime
 
+clients = []
+
 class Client:
 	def __init__(self, data):
 		self.hostname = data["hostname"]
@@ -27,36 +29,44 @@ class Client:
 		data.pop("hostname")
 		self.data = data
 
-clients = []
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-s.bind((socket.gethostname(), 3314))
-
-s.listen(5)
-while True:
+def handle_connection(c):
+	raw_data = c.recv(4096)
 	try:
-		c, addr = s.accept()
-		raw_data = c.recv(4096)
+		data = json.loads(raw_data)
+	except ValueError, e:
+		print e
+		print "JSON decoding failed with data:"
+		print raw_data
+		return
+	
+	if data["command"] == "register":
+		if data["hostname"] not in clients:
+			clients.append(Client(data))
+	elif data["command"] == "report":
 		try:
-			data = json.loads(raw_data)
+			clients[clients.index(data["hostname"])].update(data)
 		except ValueError, e:
 			print e
-			print "JSON decoding failed with data:"
-			print raw_data
-			continue
-		
-		if data["command"] == "register":
-			if data["hostname"] not in clients:
-				clients.append(Client(data))
-		if data["command"] == "report":
-			try:
-				clients[clients.index(data["hostname"])].update(data)
-			except ValueError, e:
-				print e
-		c.close()
-		
+
+	c.close()
+
+
+def main():
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+	s.bind((socket.gethostname(), 3314))
+
+	s.listen(5)
+	while True:
+		try:
+			c, addr = s.accept()
+			handle_connection(c)
+
+		except KeyboardInterrupt:
+			s.close()
+			sys.exit()
+
 		for client in clients:
 			print client
 
-	except KeyboardInterrupt:
-		s.close()
-		sys.exit()
+if __name__ == '__main__':
+    main()
