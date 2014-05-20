@@ -22,7 +22,7 @@ def uptime():
 			l = out.split("  ")[1].split(",")[0:2]
 			uptime_string = l[0][3:] + "," + l[1]
 
-	return ["uptime", uptime_string]
+	return {"uptime": uptime_string}
 
 def load_averages():
 
@@ -33,6 +33,6 @@ def load_averages():
 		if err == "":
 			load_string = out.split(": ")[1]
 
-	return ["load averages", load_string]
+	return {"load averages": load_string}
 
 metrics = [uptime, load_averages]

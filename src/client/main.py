@@ -14,10 +14,10 @@ while True:
 	data = {"command": "report", "hostname": socket.gethostname()}
 	for function in metrics.metrics:
 		result = function()
-		data[result[0]] = result[1]
+		data.update(result)
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 	s.connect((socket.gethostname(), 3314))
 	s.send(json.dumps(data))
 	s.close()
 	sys.exit()
-	
+
