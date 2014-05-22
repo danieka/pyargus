@@ -24,6 +24,7 @@ import socket
 import sys
 import json
 import datetime
+import client.metrics
 
 clients = []
 
@@ -75,7 +76,7 @@ def handle_connection(c):
 
 def main():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-	s.bind((socket.gethostname(), 3314))
+	s.bind(("", 3314))
 
 	s.listen(5)
 	while True:

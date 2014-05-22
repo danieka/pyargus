@@ -67,7 +67,7 @@ class LoadAverages(Metric):
 			if err == "":
 				load_string = out.split(": ")[1]
 
-		return {"load averages": load_string}
+		return {"load_averages": load_string}
 
 class FreeMemory(Metric):
 	@staticmethod
@@ -82,7 +82,7 @@ class FreeMemory(Metric):
 				mem_string = str(int(sep.split(line)[1].strip("\."))*4096/1024/1024) + " MB"
 				
 
-		return {"free memory": mem_string}
+		return {"free_memory": mem_string}
 
 if __name__ == '__main__':
    	pass

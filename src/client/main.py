@@ -25,10 +25,14 @@ import json
 import time
 import metrics
 import sys
+from ConfigParser import SafeConfigParser
 
 def main():
+	parser = SafeConfigParser()
+	parser.read('client/config.ini')
+
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-	s.connect((socket.gethostname(), 3314))
+	s.connect((parser.get("network", "server"), 3314))
 	data = {"command": "register", "hostname": socket.gethostname()}
 	s.send(json.dumps(data))
 	s.close()
@@ -42,7 +46,7 @@ def main():
 		s.connect((socket.gethostname(), 3314))
 		s.send(json.dumps(data))
 		s.close()
-		sys.exit()
+		time.sleep(int(parser.get("general", "update_interval")))
 
 if __name__ == '__main__':
     main()
