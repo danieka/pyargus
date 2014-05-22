@@ -20,29 +20,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import unittest
 import socket
 import json
-import time
+
+from mock import MagicMock
+import main
 import metrics
-import sys
 
-def main():
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-	s.connect((socket.gethostname(), 3314))
-	data = {"command": "register", "hostname": socket.gethostname()}
-	s.send(json.dumps(data))
-	s.close()
-
-	while True:
-		data = {"command": "report", "hostname": socket.gethostname()}
+class TestMetrics(unittest.TestCase):
+	def testGetMetric(self):
 		for metric_class in metrics.Metric.__subclasses__():
+			self.assertTrue(hasattr(metric_class, "get_metric"))
 			result = metric_class.get_metric()
-			data.update(result)
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-		s.connect((socket.gethostname(), 3314))
-		s.send(json.dumps(data))
-		s.close()
-		sys.exit()
+			self.assertEquals(type(result), dict)
 
 if __name__ == '__main__':
-    main()
+   	unittest.main()
