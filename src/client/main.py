@@ -39,7 +39,7 @@ def main():
 
 	while True:
 		data = {"command": "report", "hostname": socket.gethostname()}
-		for metric_class in metrics.Metric.__subclasses__():
+		for metric_class in metrics.Metric.__subclasses__(): #Iterate through all metris available.
 			result = metric_class.get_metric()
 			data.update(result)
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
